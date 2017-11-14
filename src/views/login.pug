@@ -13,8 +13,15 @@ block content
             +input_text("username", "Username", "", true, "", "text")
             +input_text("password", "Password", "", true, "", "password")
             .form-group
+<<<<<<< HEAD
                 button.btn.btn-primary(type="submit" value="login") Next
                 a(href='/forgotPassword' style="margin-left:10px") Forgot password?
         script.
             window.onload = function() {document.getElementsByName("username")[0].focus();}
             window.onload = function() {document.URL.contains("/bingo").focus();}
+=======
+                button.btn.btn-primary(type="submit" value="login") Login
+                a(href='/forgotPassword' style="margin-left:10px") Forgot password?
+        script.
+            window.onload = function() {document.getElementsByName("username")[0].focus();}
+>>>>>>> origin/chris

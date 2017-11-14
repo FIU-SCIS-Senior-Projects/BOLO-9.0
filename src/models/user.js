@@ -159,10 +159,6 @@ module.exports.comparePassword = function (passwordToCheck, userHash, callback) 
     });
 };
 
-module.exports.findBingoCell = function (user, pass, column, row){
-	
-};
-
 module.exports.subscribeToAgencies = function (userId, agenciesId, callback) {
     User.findByIdAndUpdate(userId,
         {$addToSet: { agencySubscriber: { $each: agenciesId}}}, callback);
