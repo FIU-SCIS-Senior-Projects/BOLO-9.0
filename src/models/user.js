@@ -89,14 +89,7 @@ function random_character() {
 
 Schema.pre("save",function(next) {
   if(this.bingoCard.length == 0){
-    for(i = 0; i < 7; i++) {
-      var row = [];
-      for(j = 0; j < 10; j++) {
-        var cell = random_character() + random_character();
-        row.push(cell);
-      }
-      this.bingoCard.push(row);
-    }
+    User.newBingoCard(this._id);
   }
   next();
 });
@@ -167,4 +160,24 @@ module.exports.subscribeToAgencies = function (userId, agenciesId, callback) {
 
 module.exports.unsubscribeFromAgencies = function (userId, agenciesId, callback) {
     User.findByIdAndUpdate(userId, {$pull: { agencySubscriber: { $in: agenciesId}}},callback);
+};
+
+module.exports.newBingoCard = function (id, callback) {
+  var card = [];
+  for(i = 0; i < 7; i++) {
+    var row = [];
+    for(j = 0; j < 10; j++) {
+      var cell = random_character() + random_character();
+      row.push(cell);
+    }
+    card.push(row);
+  }
+  User.findUserByID (id, function (err, user) {
+    if (err) next(err);
+    user.bingoCard = card;
+    user.save(function (err) {
+      if (err) next(err);
+    });
+  })
+
 };

@@ -419,3 +419,26 @@ exports.activationUser = function (req, res, next) {
         });
     })
 };
+
+exports.getBingoCard = function (req, res, next) {
+    User.findUserByID(req.params.id, function (err, user) {
+        if (err) next(err);
+        else {
+            res.render('admin-user-bingo', {user: user});
+        }
+    })
+};
+
+exports.resetBingoCard = function (req, res, next) {
+    User.findUserByID(req.params.id, function (err, user) {
+        if (err) next(err);
+        if (req.user.tier === 'ROOT' ||
+            (req.user.tier === 'ADMINISTRATOR' && req.user.agency._id === user.agency._id)) {
+                User.newBingoCard(req.params.id);
+                res.redirect('/admin/user/bingo/' + req.params.id);
+        } else {
+            req.flash('error_msg', 'You are not authorized to reset this card');
+            res.redirect('/admin/user');
+        }
+    })
+};
