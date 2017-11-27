@@ -429,15 +429,40 @@ exports.getBingoCard = function (req, res, next) {
     })
 };
 
-exports.resetBingoCard = function (req, res, next) {
+/**
+ * Renders the reset card page
+ */
+exports.getCardReset = function (req, res, next) {
+    User.findUserByID(req.params.id, function (err, user) {
+        if (err) next(err);
+        else {
+            res.render('admin-user-reset', {user: user});
+        }
+    })
+};
+
+/**
+ * Attempts to reset the card of user with the given id
+ */
+exports.postCardReset = function (req, res, next) {
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         if (req.user.tier === 'ROOT' ||
             (req.user.tier === 'ADMINISTRATOR' && req.user.agency._id === user.agency._id)) {
-                User.newBingoCard(req.params.id);
-                res.redirect('/admin/user/bingo/' + req.params.id);
+            User.comparePassword(req.body.password, req.user.password, function (err, result) {
+                if (err) next(err);
+                if (result) {
+                    console.log(result);
+                    User.newBingoCard(req.params.id);
+                    req.flash('success_msg', 'Grid Card has been reset');
+                    res.redirect('/admin/user/' + req.params.id);
+                } else {
+                    req.flash('error_msg', 'Password was not correct');
+                    res.redirect('/admin/user/resetCard/' + req.params.id);
+                }
+            })
         } else {
-            req.flash('error_msg', 'You are not authorized to reset this card');
+            req.flash('error_msg', 'You are not authorized to reset this user\'s card');
             res.redirect('/admin/user');
         }
     })

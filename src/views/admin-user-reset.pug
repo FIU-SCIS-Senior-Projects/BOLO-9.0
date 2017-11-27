@@ -1,11 +1,16 @@
 extends admin-layout
 
-
 block jumbo-desc
-    h3 User Details
+    h3 Reset Grid Card: #{user.name}
 
 block admin-content
-    h3 #{user.username}
+    .col-md-12
+        .page-header
+            h2 WARNING. THIS CAN NOT BE UNDONE
+            p.text-danger
+                | This will stop the user from being able to log in
+                | until a new Grid Card has been issued
+
     table.table
         tr
             td Name
@@ -31,10 +36,6 @@ block admin-content
         tr
             td Date Created
             td #{user.userDate}
-
-    a.btn.btn-default(href="/admin/user/edit/" + user.id) Edit Account Details
-    a.btn.btn-default(href="/password/resetUserPass/" + user.id) Reset Password
-    if (userTier === 'ROOT' || (userTier === 'ADMINISTRATOR' && userAgency._id === user.agency._id))
-        a.btn.btn-default(href="/admin/user/card/" + user.id onclick="window.open(this.href);return false;") View Grid Card
-        a.btn.btn-danger(href="/admin/user/resetCard/" + user.id) Reset Grid Card
-        a.btn.btn-danger(href="/admin/user/delete/" + user.id) Delete User
+    form(action= '/admin/user/resetCard/' + user.id  method="post" )
+        +input_text('password', 'Enter Your Password and Click RESET to reset the Grid Card', 'Enter Password', false, '', 'password')
+        button.btn.btn-danger( type="submit" value="save" ) RESET

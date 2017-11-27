@@ -71,6 +71,14 @@ input[type="file"] {
     border-top: none;
 }
 
+.card {
+    border: 1px solid black;
+    border-collapse: collapse;
+    width: 350px;
+    text-align: center;
+    padding: 8px;
+}
+
 .strong {
     font-weight: 700;
 }
