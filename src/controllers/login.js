@@ -53,14 +53,11 @@ function sendExpirationReminder(user, timeLeft) {
  * Render login page if not logged in
  */
 exports.getLogIn = function (req, res) {
-	console.log('~~~~GET~~~~`');
-	
-	var use = req.body.username;
-	console.log(use);
-	
     if (req.isAuthenticated()) {
+		var name = req.session.grid;
+		console.log(name);
         req.flash('error_msg', 'Already logged in as *' + req.user.username + '*');
-        res.redirect('/bolo');
+        res.redirect('/checkTier');
     }
     else {
         fs.readFile(__dirname + '/../public/Login.md', function (err, data) {
@@ -74,6 +71,100 @@ exports.getLogIn = function (req, res) {
         });
     }
 };
+
+/**
+ * Helps redirects the user for the Grid Login
+ */
+exports.checkTier = function (req, res) {
+	if (res.locals.userTier == "ROOT")
+	{
+		req.session.grid = 1;
+		//console.log('****GOT ROOT****')
+		res.redirect('/bolo')
+	}
+	else
+	{
+		res.redirect('/bingo')
+	}
+};
+
+/**
+ * The Validation for the Grid Login
+ */
+exports.attemptBingo1 = function (req, res) {
+	
+	
+	//console.log('~~~~POST~~~~');
+	
+	//**Grab the randomly selected values for each cell**
+	//**and correctly convert it to an approproate form** 
+	var cell_1 = req.body.cell1;
+	var cell_2 = req.body.cell2;
+	var cell_3 = req.body.cell3;
+	
+	var r1 = cell_1.charCodeAt(1) - 49;
+	var r2 = cell_2.charCodeAt(1) - 49;
+	var r3 = cell_3.charCodeAt(1) - 49;
+	
+	var c1 = cell_1.charCodeAt(0) - 65;
+	var c2 = cell_2.charCodeAt(0) - 65;
+	var c3 = cell_3.charCodeAt(0) - 65;
+	
+	//**Grab the values inputed by the User**
+	var value_1 = req.body.value1.toUpperCase();
+	var value_2 = req.body.value2.toUpperCase();
+	var value_3 = req.body.value3.toUpperCase();
+	
+	//**Grab the User's Grid Card**
+	var card = req.user.bingoCard;
+	
+	//console.log('The value for ' + cell_1 + ' is: ' + value_1);
+	//console.log('The value for ' + cell_2 + ' is: ' + value_2);
+	//console.log('The value for ' + cell_3 + ' is: ' + value_3);
+	
+	//console.log('~~~~POST~~~~');
+	
+	//**Redirect user back to the Grid Login if failed validation, else** 
+	//**let the user continue to the homepage**
+	if(value_1 != card[r1][c1] || value_2 != card[r2][c2] || value_3 != card[r3][c3])
+	{
+		req.flash('error_msg', 'ERROR! Incorrect values! Please try again.');
+		res.redirect('/bingo');
+	}
+	else
+	{
+		req.session.grid = 1;
+		req.flash("success_msg", 'Welcome ' + req.user.username);
+		res.redirect('/bolo');
+	}
+	
+};
+
+/**
+ * Renders the Grid Login page
+ */
+exports.attemptBingo2 = function (req, res) {
+	//console.log('~~~~GET~~~~');
+    if(req.isAuthenticated())
+	{
+		passport.authenticate('basic', { session: false });
+		
+		fs.readFile(__dirname + '/../public/Login.md', function (err, data) {
+			if (err) {
+				console.log('Login.md could not be read...\n' + err.stack);
+				res.render('bingo', { md: md, text: 'Welcome' });
+			} else {
+				console.log('Login.md is being read');
+				res.render('bingo', { md: md, text: data.toString() });
+			}
+		});
+	}
+	else
+	{
+		res.redirect('/login');
+	}
+};
+
 
 /**
  * The Local Strategy for logging in to BOLO

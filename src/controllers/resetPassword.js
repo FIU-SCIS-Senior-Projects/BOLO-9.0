@@ -6,7 +6,8 @@ var config = require('../config');
 var util = require('util');
 
 exports.checkPassword = function (req, res) {
-    if (req.isAuthenticated()) {
+	
+	if (req.isAuthenticated()) {
         var user = req.user;
         //Check If the user's password has expired
         var oneDayInMins = 1440;
@@ -34,7 +35,8 @@ exports.checkPassword = function (req, res) {
         }
         else {
             req.flash("success_msg", 'Welcome ' + req.user.username);
-            res.redirect('/bolo');
+			req.session.grid = 0;
+            res.redirect('/checkTier');
         }
     } else {
         res.redirect('/login');
@@ -104,7 +106,7 @@ exports.newPassword = function (req, res) {
                                 sendPasswordChangedEmail(user);
                                 console.log("The user's Password Expires on: " + newPasswordDate);
                                 req.flash('success_msg', 'Password Has Been Updated for ' + user.username);
-                                res.redirect('/bolo');
+                                res.redirect('/checkTier');
                             }
                         });
                     } else {

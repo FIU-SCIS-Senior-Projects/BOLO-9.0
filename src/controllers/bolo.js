@@ -447,19 +447,30 @@ exports.listBolos = function (req, res, next) {
  * Gets the bolo view
  */
 exports.renderBoloPage = function (req, res, next) {
-    Agency.findAllAgencies(function (err, listOfAgencies) {
-        if (err) console.log(err);
-        else {
-            res.render('bolo', {agencies: listOfAgencies});
-        }
-    });
+	var grid = req.session.grid;
+		if(grid)
+		{
+			Agency.findAllAgencies(function (err, listOfAgencies) {
+				if (err) console.log(err);
+				else {
+					res.render('bolo', {agencies: listOfAgencies});
+				}
+			});
+		}
+		else
+		{
+			res.redirect('/bingo');
+		}
 };
 
 /**
  * Handle requests to view the details of a bolo
  */
 exports.getBoloDetails = function (req, res, next) {
-    // Check if ObjectId is valid
+var grid = req.session.grid;
+if(grid)
+{    
+	// Check if ObjectId is valid
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
         Bolo.findBoloByID(req.params.id, function (err, bolo) {
             if (err) {
@@ -483,6 +494,11 @@ exports.getBoloDetails = function (req, res, next) {
     } else {
         next();
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.subscribeToBOLO = function (req, res, next) {
@@ -794,7 +810,10 @@ exports.renderBoloAsPDF = function (req, res, next) {
  * Renders the bolo create form
  */
 exports.getCreateBolo = function (req, res) {
-    Category.findAllCategories(function (err, listOfCategories) {
+var grid = req.session.grid;
+if(grid)
+{    
+	Category.findAllCategories(function (err, listOfCategories) {
         if (err) {
             req.flash('error_msg', 'Could not load the Categories on the database');
             res.redirect('/bolo');
@@ -802,13 +821,20 @@ exports.getCreateBolo = function (req, res) {
             res.render('bolo-create', {categories: listOfCategories});
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
  * Creates a BOLO
  */
 exports.postCreateBolo = function (req, res, next) {
-   
+var grid = req.session.grid;
+if(grid)
+{
     Category.findAllCategories(function (err, listOfCategories) {
         if (err) {
             req.flash('error_msg', 'Could not find categories');
@@ -967,6 +993,11 @@ exports.postCreateBolo = function (req, res, next) {
                 })
             }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -1103,6 +1134,9 @@ exports.confirmBolo = function (req, res, next) {
  * Render the bolo edit form
  */
 exports.getEditBolo = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
         Bolo.findBoloByID(req.params.id, function (err, bolo) {
             if (err) console.log(err);
@@ -1136,6 +1170,11 @@ exports.getEditBolo = function (req, res, next) {
     } else {
         next();
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -1183,11 +1222,18 @@ exports.postEditBolo = function (req, res, next) {
                     // If there are errors
                     if (errors.length) {
                         console.log("Validation errors:" + errors);
-
-                        //Render back page
-                        prevForm.errors = errors;
-                        res.render('bolo-edit', {bolo: bolo, prevForm : prevForm});
-                        
+						
+						var grid = req.session.grid;
+						if(grid)
+						{
+							//Render back page
+							prevForm.errors = errors;
+							res.render('bolo-edit', {bolo: bolo, prevForm : prevForm});
+                        }
+						else
+						{
+							res.redirect('/bingo');
+						}
                     }
                     //If no errors were found
                     else {
@@ -1293,28 +1339,36 @@ function dateDiffInYears(a, b) {
  * List archived bolos
  */
 exports.renderArchivedBolos = function (req, res, next) {
-    Bolo.findOldestArchivedBolos(req, 1, 'reportedOn', function (err, bolo) {
-        if (err) console.log(err);
-        else if (bolo.length) {
-            var today = new Date(); 
-            var d = new Date(bolo[0].reportedOn); 
-            var oldestYear = dateDiffInYears(d, today);   
-            var labels = []; 
-            labels.push({ name : "All Archived Bolos", 
-                id : 'default'
-            });
-            var i; 
-            for (i = 1; i <= oldestYear; i++) {
-                labels.push({ name : converter.toWords(i).charAt(0).toUpperCase() + converter.toWords(i).slice(1) + " Year" + ((i > 1) ? 's' : ''), 
-                    id : i
-            });
-                }
-    
-            res.render('bolo-archive', {labels : labels});
-    }
-        else 
-    res.render('bolo-archive');
-    }); 
+		var grid = req.session.grid;
+		if(grid)
+		{	
+			Bolo.findOldestArchivedBolos(req, 1, 'reportedOn', function (err, bolo) {
+				if (err) console.log(err);
+				else if (bolo.length) {
+					var today = new Date(); 
+					var d = new Date(bolo[0].reportedOn); 
+					var oldestYear = dateDiffInYears(d, today);   
+					var labels = []; 
+					labels.push({ name : "All Archived Bolos", 
+						id : 'default'
+					});
+					var i; 
+					for (i = 1; i <= oldestYear; i++) {
+						labels.push({ name : converter.toWords(i).charAt(0).toUpperCase() + converter.toWords(i).slice(1) + " Year" + ((i > 1) ? 's' : ''), 
+							id : i
+					});
+						}
+			
+					res.render('bolo-archive', {labels : labels});
+			}
+				else 
+			res.render('bolo-archive');
+			}); 
+		}
+		else
+		{
+			res.redirect('/bingo');
+		}
 };
  
 
@@ -1400,7 +1454,10 @@ exports.deleteBolo = function (req, res, next) {
  * Gets the bolo purge archive view
  */
 exports.renderPurgeArchivedBolosPage = function (req, res) {
-   
+var grid = req.session.grid;
+if(grid)
+{
+
     if (req.body.range == 'default' || req.params.id == 'default') {
         Bolo.findArchivedBolos (req, 'reportedOn', function (err, listOfBolos) { 
             if (err) console.log(err);
@@ -1424,6 +1481,11 @@ exports.renderPurgeArchivedBolosPage = function (req, res) {
             }
         }); 
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
     
 };
 
@@ -1482,6 +1544,9 @@ exports.purgeArchivedBolos = function (req, res, next) {
  * Searches though all bolos where the user has access
  */
 exports.getBoloSearch = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAllAgencies(function (err, listOfAgencies) {
         if (err) console.log(err);
         else {
@@ -1499,12 +1564,21 @@ exports.getBoloSearch = function (req, res, next) {
             });
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
  * Searches though all bolos based on the req.body input
  */
 exports.postBoloSearch = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
+
     Agency.findAgencyByName(req.body.agencyName, function (err, agency) {
         if (err) console.log(err);
         else {
@@ -1529,5 +1603,10 @@ exports.postBoloSearch = function (req, res, next) {
             });
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 

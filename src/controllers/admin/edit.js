@@ -12,6 +12,9 @@ var updateFn = require('./updateUserGuide');
  * Gets the about us editor
  */
 exports.getAboutUsForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     fs.readFile('./public/AboutUs.md', function (err, data) {
         if (err) {
             console.log(err);
@@ -22,9 +25,19 @@ exports.getAboutUsForm = function (req, res) {
             res.render('admin-edit-aboutUs', {markdown: data.toString()});
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
+
 };
 
+
 exports.saveAboutUs = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     var newMarkdown = req.body.in;
     console.log('Writing to system: ' + newMarkdown);
     fs.writeFile('./public/AboutUs.md', newMarkdown, function (err) {
@@ -38,9 +51,17 @@ exports.saveAboutUs = function (req, res) {
             res.redirect('/admin/edit/aboutUs');
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.getLoginPageForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     fs.readFile('./public/Login.md', function (err, data) {
         if (err) {
             console.log(err);
@@ -51,9 +72,17 @@ exports.getLoginPageForm = function (req, res) {
             res.render('admin-edit-login', {markdown: data.toString()});
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.saveLoginPage = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     var newMarkdown = req.body.in;
     console.log('Writing to system: ' + newMarkdown);
     fs.writeFile('./public/Login.md', newMarkdown, function (err) {
@@ -67,10 +96,17 @@ exports.saveLoginPage = function (req, res) {
             res.redirect('/admin/edit/login');
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.listUserGuideSectionsAndTitle = function (req, res, next) {
-   
+var grid = req.session.grid;
+if(grid)
+{  
     //Get sections
     UserGuide.findAllSections(function (err, listOfSections) {
         if (err) next(err);
@@ -88,6 +124,11 @@ exports.listUserGuideSectionsAndTitle = function (req, res, next) {
         }
         
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.saveUserGuideTitle = function (req, res, next) {
@@ -131,7 +172,15 @@ exports.getUserGuideSectionForm = function (req, res) {
                                 ROOT: section.ROOT,
                                 id : section.id
                             };
-                            res.render('admin-edit-userGuide-section', preFill);
+							var grid = req.session.grid;
+							if(grid)
+							{
+								res.render('admin-edit-userGuide-section', preFill);
+							}
+							else
+							{
+								res.redirect('/bingo');
+							}
                         }
                     });
                 //Section not found
@@ -298,6 +347,9 @@ exports.previewUserGuide = function (req, res) {
     if (req.params.user == "administrator") file = './public/UserGuide/Administrator.md';
     if (req.params.user == "officer")       file = './public/UserGuide/Officer.md';
 
+var grid = req.session.grid;
+if(grid)
+{
     fs.readFile(file, function (err, data) {
         if (err) {
             req.flash('error_msg', 'User Guide could not be found!');
@@ -307,4 +359,9 @@ exports.previewUserGuide = function (req, res) {
 
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };

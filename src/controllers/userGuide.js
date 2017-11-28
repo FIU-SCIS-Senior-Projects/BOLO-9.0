@@ -17,11 +17,19 @@ exports.getUserGuide = function (req, res, next) {
     if (res.locals.userTier == "ADMINISTRATOR") file = __dirname + '/../public/UserGuide/Administrator.md';
     if (res.locals.userTier == "OFFICER") file = __dirname + '/../public/UserGuide/Officer.md';
     
-    fs.readFile(file, function (err, data) {
-        if (err) req.flash('error_msg', 'User Guide could not be found!');
-        else {
-            res.render('user-guide', {md: md, text: data.toString()});
-        }
-    });
+	var grid = req.session.grid;
+	if(grid)
+	{
+		fs.readFile(file, function (err, data) {
+			if (err) req.flash('error_msg', 'User Guide could not be found!');
+			else {
+				res.render('user-guide', {md: md, text: data.toString()});
+			}
+		});
+	}
+	else
+	{
+		res.redirect('/bingo');
+	}
 };
 

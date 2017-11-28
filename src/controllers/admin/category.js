@@ -14,17 +14,36 @@ var getErrorMessage = function (err) {
 };
 
 exports.listCategories = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Category.findAllCategories(function (err, listOfCategories) {
         if (err) next(err);
         res.render('admin-category', {categories: listOfCategories})
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.getCategoryForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     res.render('admin-category-create');
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.getCategoryDetails = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     Category.findCategoryByID(req.params.id, function (err, category) {
         if (err) {
             req.flash('error_msg', 'Could not get category details');
@@ -33,9 +52,17 @@ exports.getCategoryDetails = function (req, res) {
             res.render('admin-category-details', {category: category});
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.createNewCategory = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     //Holds previously entered form data
     var prevForm = {
         name1: req.body.name
@@ -50,7 +77,15 @@ exports.createNewCategory = function (req, res) {
     if (errors) {
         console.log('Validation has failed');
         prevForm.errors = errors;
-        res.render('admin-category-create', prevForm);
+		var grid = req.session.grid;
+		if(grid)
+		{
+			res.render('admin-category-create', prevForm);
+		}
+		else
+		{
+			res.redirect('/bingo');
+		}
     }
     // If the form is valid
     else {
@@ -60,15 +95,31 @@ exports.createNewCategory = function (req, res) {
         });
         //IF they are previewing then render the Preview
         if (req.body.option === "preview") {
-            res.render('admin-category-preview', {category: newCategory});
+			var grid = req.session.grid;
+			if(grid)
+			{
+				res.render('admin-category-preview', {category: newCategory});
+			}
+			else
+			{
+				res.redirect('/bingo');
+			}
         }
         //They are submitting and want to create a new category. A new category is created.
         else {
             Category.createCategory(newCategory, function (err, category) {
                 if (err) {
-                    console.log('Save Category has failed');
-                    prevForm.errors = getErrorMessage(err);
-                    res.render('admin-category-create', prevForm);
+					var grid = req.session.grid;
+					if(grid)
+					{
+						console.log('Save Category has failed');
+						prevForm.errors = getErrorMessage(err);
+						res.render('admin-category-create', prevForm);
+					}
+					else
+					{
+						res.redirect('/bingo');
+					}
                 } else {
                     req.flash('success_msg', 'Category ' + category.name + ' has been created');
                     res.redirect('/admin/category/create');
@@ -77,10 +128,18 @@ exports.createNewCategory = function (req, res) {
         }
 
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.getEditCategoryForm = function (req, res) {
-    Category.findCategoryByID(req.params.id, function (err, category) {
+var grid = req.session.grid;
+if(grid)
+{
+	Category.findCategoryByID(req.params.id, function (err, category) {
         if (err) {
             req.flash('error_msg', 'Could not get category details');
             res.redirect('/admin/category');
@@ -88,10 +147,17 @@ exports.getEditCategoryForm = function (req, res) {
             res.render('admin-category-edit', {category: category});
         }
     });
-
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 exports.postEditCategory = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     var prevForm = {
         name1: req.body.name
     };
@@ -136,7 +202,11 @@ exports.postEditCategory = function (req, res, next) {
 
         })
     }
-
+}
+else
+{
+	res.redirect('/bingo');
+}
 
 };
 

@@ -23,5 +23,7 @@ router.post('/delete/:id', control.postDeleteUser);
 router.post('/activation/:id', control.activationUser);
 router.get('/resetPassword/:id', control.getPasswordReset);
 router.post('/resetPassword/:id', control.postPasswordReset);
+router.get('/bingo/:id', control.getBingoCard);
+router.get('/reset/:id', control.resetBingoCard);
 
 module.exports = router;

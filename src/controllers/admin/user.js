@@ -59,7 +59,15 @@ var getErrorMessage = function (err) {
  * Responds with new Jade Page to Upload CSV
  */
 exports.getCSVForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     res.render('admin-user-multiple');
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -137,12 +145,20 @@ exports.multiUserCreate = function (req, res, next) {
  * Responds with a form to create a new user.
  */
 exports.getCreateForm = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAllAgencies(function (err, listOfAgencies) {
         if (err) next(err);
         else {
             res.render('admin-user-create', {agencies: listOfAgencies})
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -255,6 +271,9 @@ exports.postCreateForm = function (req, res, next) {
  * Responds with a list of all system users.
  */
 exports.getList = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     if (req.user.tier === 'ROOT') {
         User.findAllUsers(function (err, listOfUsers) {
             if (err) next(err);
@@ -272,6 +291,11 @@ exports.getList = function (req, res, next) {
     } else {
         res.render('unauthorized');
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -288,12 +312,20 @@ exports.getSortedList = function (req, res) {
  * Responds with account information for a specified user.
  */
 exports.getDetails = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     console.log(req.params.id);
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         console.log(user);
         res.render('admin-user-details', {user: user});
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -314,10 +346,18 @@ exports.postPasswordReset = function (req, res) {
  * Responds with a form for editing a user's details.
  */
 exports.getEditDetails = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{	
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         res.render('admin-user-edit', {user: user});
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -365,12 +405,20 @@ exports.postEditDetails = function (req, res, next) {
  * Renders the delete user page
  */
 exports.getDeleteUser = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         else {
             res.render('admin-user-delete', {user: user});
         }
     })
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -417,5 +465,28 @@ exports.activationUser = function (req, res, next) {
             req.flash('success_msg', 'User *' + user.username + '* is now ' + msg);
             res.redirect('/admin/user/edit/' + req.params.id);
         });
+    })
+};
+
+exports.getBingoCard = function (req, res, next) {
+    User.findUserByID(req.params.id, function (err, user) {
+        if (err) next(err);
+        else {
+            res.render('admin-user-bingo', {user: user});
+        }
+    })
+};
+
+exports.resetBingoCard = function (req, res, next) {
+    User.findUserByID(req.params.id, function (err, user) {
+        if (err) next(err);
+        if (req.user.tier === 'ROOT' ||
+            (req.user.tier === 'ADMINISTRATOR' && req.user.agency._id === user.agency._id)) {
+                User.newBingoCard(req.params.id);
+                res.redirect('/admin/user/bingo/' + req.params.id);
+        } else {
+            req.flash('error_msg', 'You are not authorized to reset this card');
+            res.redirect('/admin/user');
+        }
     })
 };

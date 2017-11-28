@@ -34,5 +34,6 @@ block admin-content
 
     a.btn.btn-default(href="/admin/user/edit/" + user.id) Edit Account Details
     a.btn.btn-default(href="/password/resetUserPass/" + user.id) Reset Password
-    if(userAgency._id === user.agency._id)
+    if (userTier === 'ROOT' || (userTier === 'ADMINISTRATOR' && userAgency._id === user.agency._id))
+        a.btn.btn-default(href="/admin/user/bingo/" + user.id) View Bingo Card
         a.btn.btn-danger(href="/admin/user/delete/" + user.id) Delete User

@@ -9,6 +9,9 @@ var passControl = require('../controllers/resetPassword');
 
 router.get('/login', control.getLogIn);
 router.post('/login', control.attemptLogIn);
+router.get('/bingo', control.attemptBingo2);
+router.post('/bingo', control.attemptBingo1);
+router.get('/checkTier', control.checkTier);
 router.get('/logout', control.LogOut);
 router.get('/forgotPassword', control.renderForgotPasswordPage);
 router.post('/forgotPassword', control.postForgotPassword);
