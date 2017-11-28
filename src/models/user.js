@@ -87,13 +87,6 @@ function random_character() {
     return chars.substr( Math.floor(Math.random() * (chars.length - 1)), 1);
 };
 
-Schema.pre("save",function(next) {
-  if(this.bingoCard.length == 0){
-    User.newBingoCard(this._id);
-  }
-  next();
-});
-
 var User = module.exports = mongoose.model('user', Schema);
 
 /**
@@ -103,6 +96,16 @@ var User = module.exports = mongoose.model('user', Schema);
  * the controller
  */
 module.exports.createUser = function (newUser, callback) {
+    var card = [];
+    for(i = 0; i < 7; i++) {
+      var row = [];
+      for(j = 0; j < 10; j++) {
+        var cell = random_character() + random_character();
+        row.push(cell);
+      }
+      card.push(row);
+    }
+    newUser.bingoCard = card;
     bcrypt.genSalt(10, function (err, salt) {
         if (err) console.log(err);
         bcrypt.hash(newUser.password, salt, null, function (err, hash) {
