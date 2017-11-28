@@ -9,10 +9,12 @@ block content
     .container
         noscript
             h2.text-danger Javascript is disabled in your browser! You can not create a bolo or access most features without javascript enabled!
-        form#login(action="/bingo-login" method="post")
+        form#login(action="/login" method="post")
             +input_text("username", "Username", "", true, "", "text")
             +input_text("password", "Password", "", true, "", "password")
             .form-group
-                button.btn.btn-primary(type="submit" value="login") Login
-                a(href='/forgotPassword' style="margin-left:10px") Lost Bingo Card?
-
+                button.btn.btn-primary(type="submit" value="login") Next
+                a(href='/forgotPassword' style="margin-left:10px") Forgot password?
+        script.
+            window.onload = function() {document.getElementsByName("username")[0].focus();}
+            window.onload = function() {document.URL.contains("/bingo").focus();}

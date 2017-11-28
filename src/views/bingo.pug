@@ -1,0 +1,33 @@
+extends layout-bingo
+
+block jumbo
+    .jumbotron
+        .container
+            div.text-center
+                != md(text)
+block content
+    .container
+        noscript
+            h2.text-danger Javascript is disabled in your browser! You can not create a bolo or access most features without javascript enabled!
+        form#login(action="/bingo" method="post")
+            h2 Grid Card Login
+               h5 Please input the values from your Grid Card corresponding to the section given:
+               -var sec1 = check_test()
+               -var sec2 = check_test()
+               -var sec3 = check_test()
+               .form-group.row
+                 .col-xs-1
+                   +input_text("value1", sec1, "", true, "", "text")
+                   +input_text("cell1", "", "", true, sec1, "hidden")
+                 .col-xs-1                 
+                   +input_text("value2", sec2, "", true, "", "text")
+                   +input_text("cell2", "", "", true, sec2, "hidden")
+                 .col-xs-1         
+                   +input_text("value3", sec3, "", true, "", "text")
+                   +input_text("cell3", "", "", true, sec3, "hidden")
+            .form-group
+                button.btn.btn-primary(type="submit" value="bingo") Login
+        script.
+            window.onload = function() {document.getElementsByName("cell1").style.visibility = "hidden";}
+            window.onload = function() {document.getElementsByName("cell2").style.visibility = "hidden";}
+            window.onload = function() {document.getElementsByName("cell3").style.visibility = "hidden";}			
