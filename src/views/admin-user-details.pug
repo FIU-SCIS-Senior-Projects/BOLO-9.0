@@ -34,7 +34,7 @@ block admin-content
 
     a.btn.btn-default(href="/admin/user/edit/" + user.id) Edit Account Details
     a.btn.btn-default(href="/password/resetUserPass/" + user.id) Reset Password
-    if (userTier === 'ROOT' || (userTier === 'ADMINISTRATOR' && userAgency._id === user.agency._id))
+    if (userTier === 'ROOT' || ((userTier === 'ADMINISTRATOR') && (userAgency.name === user.agency.name)))
         a.btn.btn-default(href="/admin/user/card/" + user.id onclick="window.open(this.href);return false;") View Grid Card
         a.btn.btn-danger(href="/admin/user/resetCard/" + user.id) Reset Grid Card
         a.btn.btn-danger(href="/admin/user/delete/" + user.id) Delete User
