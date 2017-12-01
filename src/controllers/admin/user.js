@@ -472,7 +472,15 @@ exports.getBingoCard = function (req, res, next) {
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         else {
-            res.render('admin-user-bingo', {user: user});
+			var grid = req.session.grid;
+			if(grid)
+			{
+				res.render('admin-user-bingo', {user: user});
+			}
+			else
+			{
+				res.redirect('/bingo');
+			}
         }
     })
 };
@@ -484,7 +492,15 @@ exports.getCardReset = function (req, res, next) {
     User.findUserByID(req.params.id, function (err, user) {
         if (err) next(err);
         else {
-            res.render('admin-user-reset', {user: user});
+			var grid = req.session.grid;
+			if(grid)
+			{
+				res.render('admin-user-reset', {user: user});
+			}
+			else
+			{
+				res.redirect('/bingo');
+			}
         }
     })
 };

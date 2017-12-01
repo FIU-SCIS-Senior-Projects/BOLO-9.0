@@ -34,24 +34,40 @@ var getErrorMessage = function (err) {
  * Respond with a list of agencies in the database
  */
 exports.listAgencies = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAllAgencies(function (err, agencies) {
         if (err) next(err);
         else {
             res.render('admin-agency', {agencies: agencies});
         }
     });
+	}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
  * Gets the details of an agency
  */
 exports.getAgencyDetails = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAgencyByID(req.params.id, function (err, agency) {
         if (err) next(err);
         else {
             res.render('admin-agency-details', {agency: agency});
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -78,7 +94,15 @@ exports.activationAgency = function (req, res, next) {
  * Respond with a form to create an agency.
  */
 exports.getCreateForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     res.render('admin-agency-create');
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -184,12 +208,20 @@ exports.postCreateForm = function (req, res) {
  * Respond with a form to edit agency details
  */
 exports.getEditForm = function (req, res) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAgencyByID(req.params.id, function (err, agency) {
         if (err) next(err);
         else {
             res.render('admin-agency-edit', {agency: agency});
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
@@ -271,18 +303,29 @@ exports.postEditForm = function (req, res) {
  * Respond with a form to edit agency details
  */
 exports.getEditForm = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     Agency.findAgencyByID(req.params.id, function (err, agency) {
         if (err) next(err);
         else {
             res.render('admin-agency-edit', {agency: agency});
         }
     });
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
  * Gets the delete agency conformation page
  */
 exports.getDeleteAgency = function (req, res, next) {
+var grid = req.session.grid;
+if(grid)
+{
     if (req.user.tier === 'ROOT') {
         Agency.findAgencyByID(req.params.id, function (err, agency) {
             if (err) next(err);
@@ -301,6 +344,11 @@ exports.getDeleteAgency = function (req, res, next) {
     } else {
         res.render('unauthorized');
     }
+}
+else
+{
+	res.redirect('/bingo');
+}
 };
 
 /**
